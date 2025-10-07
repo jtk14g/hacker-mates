@@ -31,7 +31,7 @@
 <body>
 
 <h1>Descomposición Numérica</h1>
-<p>Introduce un número (por ejemplo, 7249):</p>
+<p>Introduce un número (por ejemplo, 1234):</p>
 <input id="numero" type="number" />
 <button onclick="procesar()">Analizar</button>
 
@@ -50,9 +50,9 @@ function procesar() {
   const c = Math.floor(n / 100) % 10;
   const um = Math.floor(n / 1000) % 10;
 
-  salida += `<div class="linea">Tiene ${um} UM + ${c}C + ${d}D + ${u}U</div>`;
-  salida += `<div class="linea">${c*100} + ${d*10} + ${u}</div>`;
-  salida += `<div class="linea">${c}x100 + ${d}x10 + ${u}x1</div>`;
+  salida += `<div class="linea">Tiene ${um}UM + ${c}C + ${d}D + ${u}U</div>`;
+  salida += `<div class="linea">${um*1000} + ${c*100} + ${d*10} + ${u}</div>`;
+  salida += `<div class="linea">${um*1000} + ${c}x100 + ${d}x10 + ${u}x1</div>`;
 
   // Redondeos
   const centenas = Math.round(n / 100) * 100;
@@ -91,3 +91,4 @@ function ordinal(num) {
 
 </body>
 </html>
+
