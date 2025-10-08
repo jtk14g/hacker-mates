@@ -41,6 +41,12 @@
   <!--<p><img src="escudo.png" alt="Escudo del colegio" width="100"></p>-->
 
   <h1>CLASE DEL CID CAMPEADOR</h1>
+  <p>
+    <a href="mayor_menor.html" style="text-decoration:none; background:#3366cc; color:white; padding:8px 14px; border-radius:6px;">
+      ➡ Ir a otra actividad
+    </a>
+  </p>
+
   <p>Escribe un número: (NNNN)</p>
   <input id="numero" type="number" />
   <button onclick="procesar()">Analizar</button>
@@ -66,9 +72,6 @@
     salida += `<div class="linea">Tiene ${um}UM + ${c}C + ${d}D + ${u}U</div>`;
     salida += `<div class="linea">${um}x1000 + ${c}x100 + ${d}x10 + ${u}x1</div>`;
     salida += `<div class="linea">${um*1000} + ${c*100} + ${d*10} + ${u}</div>`;
-    <p>
-  
-</p>
 
     // --- Redondeos ---
     const umillar = Math.round(n / 1000) * 1000;
@@ -85,13 +88,6 @@
     const ultDos = n % 100;
     salida += `<div class="linea"><b>Ordinal de sus dos últimas cifras (${ultDos}):</b> ${ordinal(ultDos)}</div>`;
     document.getElementById("salida").innerHTML = salida;
-
-    <p>
-  <a href="mayor_menor.html" style="text-decoration:none; background:#3366cc; color:white; padding:8px 14px; border-radius:6px;">
-    ➡ Comparar números
-  </a>
-</p>
-
     
   }
 
@@ -170,6 +166,7 @@
 
 </body>
 </html>
+
 
 
 
