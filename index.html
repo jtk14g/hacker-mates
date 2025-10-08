@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Clase del Cole</title>
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background: #f0f7ff;
+      color: #222;
+      padding: 20px;
+      max-width: 600px;
+      margin: auto;
+      text-align: center;
+    }
+    h1 {
+      color: #3366cc;
+      margin-bottom: 10px;
+    }
+    img {
+      margin-bottom: 15px;
+    }
+    input, button {
+      padding: 8px;
+      font-size: 16px;
+      margin-top: 10px;
+    }
+    #salida {
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      margin-top: 20px;
+      text-align: left;
+    }
+    .linea { margin-bottom: 8px; }
+  </style>
+</head>
+<body>
+
+  <!--<p><img src="escudo.png" alt="Escudo del colegio" width="100"></p>-->
+
+  <h1>CLASE DEL CID CAMPEADOR</h1>
+  <p>Introduce un número: (NNNN)</p>
+  <input id="numero" type="number" />
+  <button onclick="procesar()">Analizar</button>
+
+  <div id="salida"></div>
+
+  <script>
+  function procesar() {
+    const n = parseInt(document.getElementById("numero").value);
+    if (isNaN(n)) return alert("Introduce un número válido");
+
+    let salida = `<div class="linea"><b>El número es:</b> ${n}</div>`;
+
+    // --- Texto en español ---
+    salida += `<div class="linea"><b>En letras:</b> ${numeroEnLetras(n)}</div>`;
+
+    // --- Descomponer cifras ---
+    const u = n % 10;
+    const d = Math.floor(n / 10) % 10;
+    const c = Math.floor(n / 100) % 10;
+    const um = Math.floor(n / 1000) % 10;
+
+    salida += `<div class="linea">Tiene ${um}UM + ${c}C + ${d}D + ${u}U</div>`;
+    salida += `<div class="linea">${c*100} + ${d*10} + ${u}</div>`;
+    salida += `<div class="linea">${c}x100 + ${d}x10 + ${u}x1</div>`;
+
+    // --- Redondeos ---
+    const umillar = Math.round(n / 1000) * 1000;
+    const centenas = Math.round(n / 100) * 100;
+    const decenas = Math.round(n / 10) * 10;
+    salida += `<div class="linea"><b>Redondeado a unidades de millar:</b> ${umillar}</div>`;
+    salida += `<div class="linea"><b>Redondeado a centenas:</b> ${centenas}</div>`;
+    salida += `<div class="linea"><b>Redondeado a decenas:</b> ${decenas}</div>`;
+
+     // --- Número romano ---
+    salida += `<div class="linea"><b>En números romanos:</b> ${aRomano(n)}</div>`;
+    
+    // --- Ordinal de las dos últimas cifras ---
+    const ultDos = n % 100;
+    salida += `<div class="linea"><b>Ordinal de sus dos últimas cifras (${ultDos}):</b> ${ordinal(ultDos)}</div>`;
+
+    document.getElementById("salida").innerHTML = salida;
+  }
+
+  // Ordinales básicos
+  function ordinal(num) {
+    const ord = {
+      1:"primero",2:"segundo",3:"tercero",4:"cuarto",5:"quinto",
+      6:"sexto",7:"séptimo",8:"octavo",9:"noveno",10:"décimo",
+      11:"undécimo",12:"duodécimo",
+      20:"vigésimo",30:"trigésimo",40:"cuadragésimo",50:"quincuagésimo",
+      60:"sexagésimo",70:"septuagésimo",80:"octogésimo",90:"nonagésimo"
+    };
+    if (ord[num]) return capitalizar(ord[num]);
+    const decenas = Math.floor(num / 10) * 10;
+    const unidades = num % 10;
+    if (ord[decenas] && ord[unidades]) return `${ord[decenas]} ${ord[unidades]}`;
+    return "Ordinal no definido";
+  }
+
+  function capitalizar(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
+  // Conversión a número romano
+  function aRomano(num) {
+    if (num <= 0 || num > 3999) return "Fuera de rango (1-3999)";
+    const valores = [
+      [1000,"M"],[900,"CM"],[500,"D"],[400,"CD"],
+      [100,"C"],[90,"XC"],[50,"L"],[40,"XL"],
+      [10,"X"],[9,"IX"],[5,"V"],[4,"IV"],[1,"I"]
+    ];
+    let resultado = "";
+    for (let [valor, simbolo] of valores) {
+      while (num >= valor) {
+        resultado += simbolo;
+        num -= valor;
+      }
+    }
+    return resultado;
+  }
+
+  // Conversión simple a letras en español
+  function numeroEnLetras(num) {
+    if (num === 0) return "cero";
+
+    const unidades = ["", "uno", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve"];
+    const decenas = ["", "diez", "veinte", "treinta", "cuarenta", "cincuenta", "sesenta", "setenta", "ochenta", "noventa"];
+    const centenas = ["", "cien", "doscientos", "trescientos", "cuatrocientos", "quinientos", "seiscientos", "setecientos", "ochocientos", "novecientos"];
+
+    if (num < 10) return unidades[num];
+    if (num < 20) {
+      const especiales = {10:"diez",11:"once",12:"doce",13:"trece",14:"catorce",15:"quince",
+                          16:"dieciséis",17:"diecisiete",18:"dieciocho",19:"diecinueve"};
+      return especiales[num];
+    }
+    if (num < 100) {
+      const d = Math.floor(num / 10);
+      const u = num % 10;
+      return decenas[d] + (u ? " y " + unidades[u] : "");
+    }
+    if (num < 1000) {
+      const c = Math.floor(num / 100);
+      const resto = num % 100;
+      if (num === 100) return "cien";
+      return centenas[c] + (resto ? " " + numeroEnLetras(resto) : "");
+    }
+    if (num < 10000) {
+      const m = Math.floor(num / 1000);
+      const resto = num % 1000;
+      let miles = (m === 1) ? "mil" : numeroEnLetras(m) + " mil";
+      return miles + (resto ? " " + numeroEnLetras(resto) : "");
+    }
+    return "Número demasiado grande (máx. 9999)";
+  }
+  </script>
+
+</body>
+</html>
+
