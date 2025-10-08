@@ -64,8 +64,8 @@
     const um = Math.floor(n / 1000) % 10;
 
     salida += `<div class="linea">Tiene ${um}UM + ${c}C + ${d}D + ${u}U</div>`;
-    salida += `<div class="linea">${um*1000} + ${c*100} + ${d*10} + ${u}</div>`;
     salida += `<div class="linea">${um}x1000 + ${c}x100 + ${d}x10 + ${u}x1</div>`;
+    salida += `<div class="linea">${um*1000} + ${c*100} + ${d*10} + ${u}</div>`;
 
     // --- Redondeos ---
     const umillar = Math.round(n / 1000) * 1000;
@@ -158,10 +158,11 @@
   }
   </script>
 
-  <p><a href="/mayor_menor.html" width="100"></p>
+  <p><a href="/mayor_menor.html" width="100">Comparar números</a></p>
 
 </body>
 </html>
+
 
 
 
