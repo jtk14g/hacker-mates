@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Descomposición Numérica</title>
+  </head>
+<body>
+<!-- ======= Juego: comparar números ======= -->
+<style>
+  /* Contenedor */
+  #compare-game {
+    max-width: 520px;
+    margin: 28px auto;
+    padding: 18px;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    background: linear-gradient(180deg, #fff, #fbfbff);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    text-align: center;
+  }
+
+  #compare-game h2 { margin: 0 0 10px; font-size: 1.1rem; color:#333; }
+  .numbers-row {
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap: 18px;
+    margin: 14px 0 8px;
+    font-size: 2rem;
+    font-weight: 700;
+  }
+  .num-box {
+    min-width:110px;
+    padding: 12px 10px;
+    border-radius: 10px;
+    background: linear-gradient(180deg,#f6f8ff,#eef2ff);
+    box-shadow: inset 0 -3px 6px rgba(0,0,0,0.03);
+    border: 2px solid transparent;
+  }
+  .sym {
+    font-size: 2.6rem;
+    width: 72px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  .controls { margin-top: 12px; display:flex; gap:10px; justify-content:center; }
+  .controls button {
+    padding: 10px 14px;
+    font-size: 1.05rem;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    background: linear-gradient(180deg,#ffffff,#e9f0ff);
+    transition: transform .12s ease, box-shadow .12s;
+  }
+  .controls button:active { transform: translateY(2px); box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
+
+  #feedback {
+    min-height: 38px;
+    margin-top: 14px;
+    font-weight: 600;
+    color: #222;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    padding:6px;
+    border-radius:8px;
+  }
+
+  /* Correct animation */
+  .correct {
+    animation: pop .45s ease;
+    border: 2px solid #4ade80;
+    background: linear-gradient(90deg,#f0fff4,#eaffef);
+  }
+  @keyframes pop {
+    0% { transform: scale(.92); opacity: .6; }
+    60% { transform: scale(1.06); opacity: 1; }
+    100% { transform: scale(1); }
+  }
+
+  /* Wrong (shake) */
+  .wrong {
+    animation: shake .6s;
+    border: 2px solid #ff7b7b;
+    background: linear-gradient(90deg,#fff6f6,#fff0f0);
+  }
+  @keyframes shake {
+    0% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(6px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
+    100% { transform: translateX(0); }
+  }
+
+  /* Confetti emoji particles */
+  .confetti {
+    pointer-events: none;
+    position: absolute;
+    font-size: 22px;
+    opacity: 1;
+    transform-origin: center;
+    animation: floatUp 1100ms linear forwards;
+    will-change: transform, opacity;
+  }
+  @keyframes floatUp {
+    0% { transform: translateY(0) rotate(0deg) scale(1); opacity: 1; }
+    100% { transform: translateY(-140px) rotate(360deg) scale(.7); opacity: 0; }
+  }
+
+  /* Small footer row (siguiente) */
+  .bottom-row { margin-top: 12px; display:flex; justify-content:center; gap:10px; align-items:center; }
+  .btn-secondary {
+    background: linear-gradient(180deg,#ffffff,#f3f4f6);
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+  }
+
+  /* Responsive tweak */
+  @media (max-width:420px){
+    .numbers-row { gap: 10px; }
+    .num-box { min-width:80px; padding:10px; font-size:1.4rem; }
+    .sym { width:56px; font-size:2.2rem; }
+  }
+</style>
+
+<div id="compare-game" aria-live="polite">
+  <h2>Comparar números — ¿qué símbolo corresponde?</h2>
+
+  <div class="numbers-row" id="numbersRow">
+    <div class="num-box" id="leftNum" aria-label="Número izquierdo">0000</div>
+    <div class="sym" id="midSymbol">?</div>
+    <div class="num-box" id="rightNum" aria-label="Número derecho">0000</div>
+  </div>
+
+  <div class="controls" role="group" aria-label="Elige el símbolo">
+    <button data-op="lt" title="Menor que">&lt;</button>
+    <button data-op="gt" title="Mayor que">&gt;</button>
+    <button data-op="eq" title="Igual">=</button>
+  </div>
+
+  <div id="feedback" aria-atomic="true"></div>
+
+  <div class="bottom-row">
+    <button class="btn-secondary" id="newBtn">Nuevo</button>
+    <button class="btn-secondary" id="revealBtn">Mostrar respuesta</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  const leftEl = document.getElementById('leftNum');
+  const rightEl = document.getElementById('rightNum');
+  const midSym = document.getElementById('midSymbol');
+  const feedback = document.getElementById('feedback');
+  const controls = document.querySelectorAll('#compare-game .controls button');
+  const newBtn = document.getElementById('newBtn');
+  const revealBtn = document.getElementById('revealBtn');
+  const container = document.getElementById('compare-game');
+
+  // Mensajes positivos para fallos (aleatorios)
+  const niceFails = [
+    "Casi — inténtalo otra vez, ¡tú puedes!",
+    "Buen intento. Repítelo y lo conseguirás.",
+    "No te rindas, la práctica hace magia.",
+    "Ups — prueba otra vez, estás aprendiendo.",
+    "Sigue intentándolo — ¡cada fallo enseña!"
+  ];
+  const winMsgs = [
+    "¡Perfecto! 🎉",
+    "¡Muy bien! ¡Excelente trabajo! 🌟",
+    "¡Acertaste! ¡Eres un crack! 💪",
+    "¡Bien hecho! Sigue así ✨"
+  ];
+
+  let leftNum = 0, rightNum = 0;
+
+  function randInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  function newRound() {
+    // números de 4 cifras: 1000..9999
+    leftNum = randInt(1000, 9999);
+    rightNum = randInt(1000, 9999);
+    leftEl.textContent = leftNum.toString().padStart(4,'0');
+    rightEl.textContent = rightNum.toString().padStart(4,'0');
+    midSym.textContent = '?';
+    feedback.textContent = '';
+    leftEl.classList.remove('correct','wrong');
+    rightEl.classList.remove('correct','wrong');
+    container.querySelectorAll('.confetti').forEach(n => n.remove());
+  }
+
+  function checkAnswer(op) {
+    const correctOp = (leftNum < rightNum) ? 'lt' : (leftNum > rightNum) ? 'gt' : 'eq';
+    if (op === correctOp) {
+      // acierto: animación y mensaje positivo
+      midSym.textContent = (correctOp === 'lt') ? '<' : (correctOp === 'gt') ? '>' : '=';
+      feedback.textContent = winMsgs[Math.floor(Math.random()*winMsgs.length)];
+      feedback.classList.remove('wrong'); feedback.classList.add('correct');
+
+      // marcar los numeritos un poquito
+      leftEl.classList.add('correct');
+      rightEl.classList.add('correct');
+
+      // confetti emoji burst
+      launchConfetti();
+    } else {
+      // fallo: mensaje amable y animación de "incorrecto"
+      midSym.textContent = (op === 'lt') ? '<' : (op === 'gt') ? '>' : '=';
+      feedback.textContent = niceFails[Math.floor(Math.random()*niceFails.length)];
+      feedback.classList.remove('correct'); feedback.classList.add('wrong');
+
+      // shake numeritos
+      leftEl.classList.add('wrong');
+      rightEl.classList.add('wrong');
+
+      // quitar la clase wrong cuando termine la animación para permitir reintentos
+      setTimeout(()=> {
+        leftEl.classList.remove('wrong');
+        rightEl.classList.remove('wrong');
+      }, 650);
+    }
+  }
+
+  controls.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const op = btn.getAttribute('data-op');
+      checkAnswer(op);
+    });
+  });
+
+  newBtn.addEventListener('click', newRound);
+  revealBtn.addEventListener('click', function(){
+    // mostrar la respuesta (sin juzgar)
+    const correctOp = (leftNum < rightNum) ? '<' : (leftNum > rightNum) ? '>' : '=';
+    midSym.textContent = correctOp;
+    feedback.textContent = "Respuesta mostrada — inténtalo otra vez con otro.";
+    feedback.classList.remove('wrong'); feedback.classList.add('correct');
+  });
+
+  // Confetti simple con emoji
+  function launchConfetti() {
+    const emojis = ['🎉','✨','🎈','💫','⭐','👍'];
+    const rect = container.getBoundingClientRect();
+    for (let i=0;i<12;i++){
+      const s = document.createElement('span');
+      s.className = 'confetti';
+      s.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+      // random left within the symbol area
+      const x = (rect.width/2) + (Math.random()*120 - 60);
+      s.style.left = x + 'px';
+      s.style.top = (rect.height * 0.45) + 'px';
+      s.style.opacity = 1;
+      s.style.transform = `translateX(${Math.random()*40-20}px)`;
+      s.style.fontSize = (16 + Math.random()*18) + 'px';
+      s.style.position = 'absolute';
+      // random delay and duration
+      s.style.animationDuration = (900 + Math.random()*700) + 'ms';
+      container.appendChild(s);
+      // remove after animation
+      setTimeout(()=> s.remove(), 1900);
+    }
+  }
+
+  // iniciar juego a la carga
+  newRound();
+})();
+</script>
+</body>
+</html>
