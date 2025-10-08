@@ -204,49 +204,81 @@
   ];
 
   let leftNum = 0, rightNum = 0;
+  let wrongTimeout = null; // <--- para controlar la limpieza de la animación "wrong"
 
   function randInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
 
   function newRound() {
-  // números de 4 cifras: 1000..9999
-  leftNum = randInt(1000, 9999);
-  rightNum = randInt(1000, 9999);
-  leftEl.textContent = leftNum.toString().padStart(4,'0');
-  rightEl.textContent = rightNum.toString().padStart(4,'0');
-  midSym.textContent = '?';
+    // Si hay un timeout pendiente, lo limpiamos
+    if (wrongTimeout) {
+      clearTimeout(wrongTimeout);
+      wrongTimeout = null;
+    }
 
-  // 🔹 resetear feedback
-  feedback.textContent = '';
-  feedback.classList.remove('correct', 'wrong');
+    leftNum = randInt(1000, 9999);
+    rightNum = randInt(1000, 9999);
+    leftEl.textContent = leftNum.toString().padStart(4,'0');
+    rightEl.textContent = rightNum.toString().padStart(4,'0');
+    midSym.textContent = '?';
 
-  // 🔹 resetear cuadros numéricos
-  leftEl.classList.remove('correct', 'wrong');
-  rightEl.classList.remove('correct', 'wrong');
+    // reset visuales (feedback + cuadros numéricos)
+    feedback.textContent = '';
+    feedback.classList.remove('correct','wrong');
+    leftEl.classList.remove('correct','wrong');
+    rightEl.classList.remove('correct','wrong');
 
-  // 🔹 eliminar confetti
-  container.querySelectorAll('.confetti').forEach(n => n.remove());
-}
+    // eliminar confetti si hay
+    container.querySelectorAll('.confetti').forEach(n => n.remove());
+  }
 
   function checkAnswer(op) {
     const correctOp = (leftNum < rightNum) ? 'lt' : (leftNum > rightNum) ? 'gt' : 'eq';
+
     if (op === correctOp) {
+      // Si había timeout de "wrong", lo limpiamos para que no reaparezca nada raro
+      if (wrongTimeout) {
+        clearTimeout(wrongTimeout);
+        wrongTimeout = null;
+      }
+
       midSym.textContent = (correctOp === 'lt') ? '<' : (correctOp === 'gt') ? '>' : '=';
       feedback.textContent = winMsgs[Math.floor(Math.random()*winMsgs.length)];
-      feedback.classList.remove('wrong'); feedback.classList.add('correct');
+
+      // quitamos cualquier "wrong" antes de poner "correct"
+      feedback.classList.remove('wrong');
+      feedback.classList.add('correct');
+
+      leftEl.classList.remove('wrong');
+      rightEl.classList.remove('wrong');
       leftEl.classList.add('correct');
       rightEl.classList.add('correct');
+
       launchConfetti();
+
     } else {
+      // mostramos la elección del usuario como símbolo
       midSym.textContent = (op === 'lt') ? '<' : (op === 'gt') ? '>' : '=';
+
       feedback.textContent = niceFails[Math.floor(Math.random()*niceFails.length)];
-      feedback.classList.remove('correct'); feedback.classList.add('wrong');
+
+      // quitamos cualquier "correct" antes de poner "wrong"
+      feedback.classList.remove('correct');
+      feedback.classList.add('wrong');
+
+      leftEl.classList.remove('correct');
+      rightEl.classList.remove('correct');
       leftEl.classList.add('wrong');
       rightEl.classList.add('wrong');
-      setTimeout(()=> {
+
+      // limpiamos timeouts previos y programamos quitar 'wrong' al terminar la animación
+      if (wrongTimeout) clearTimeout(wrongTimeout);
+      wrongTimeout = setTimeout(()=> {
         leftEl.classList.remove('wrong');
         rightEl.classList.remove('wrong');
+        // no tocamos 'correct' aquí: si existiera se hubiera eliminado al poner 'wrong'
+        wrongTimeout = null;
       }, 650);
     }
   }
@@ -261,10 +293,16 @@
   newBtn.addEventListener('click', newRound);
 
   revealBtn.addEventListener('click', function(){
+    // mostrar la respuesta (sin juzgar) y dejar todo neutro para intentar otro
     const correctOp = (leftNum < rightNum) ? '<' : (leftNum > rightNum) ? '>' : '=';
     midSym.textContent = correctOp;
     feedback.textContent = "Respuesta mostrada — ¡intenta otro!";
-    feedback.classList.remove('wrong','correct'); // 🧼 vuelve a neutro
+
+    // limpiamos estados/animaciones y cualquier timeout pendiente
+    feedback.classList.remove('wrong','correct');
+    leftEl.classList.remove('wrong','correct');
+    rightEl.classList.remove('wrong','correct');
+    if (wrongTimeout) { clearTimeout(wrongTimeout); wrongTimeout = null; }
   });
 
   function launchConfetti() {
@@ -287,8 +325,10 @@
     }
   }
 
+  // iniciar juego a la carga
   newRound();
 })();
 </script>
+
 </body>
 </html>
