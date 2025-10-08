@@ -234,54 +234,49 @@
   }
 
   function checkAnswer(op) {
-    const correctOp = (leftNum < rightNum) ? 'lt' : (leftNum > rightNum) ? 'gt' : 'eq';
+  const correctOp = (leftNum < rightNum) ? 'lt' : (leftNum > rightNum) ? 'gt' : 'eq';
 
-    if (op === correctOp) {
-      // Si había timeout de "wrong", lo limpiamos para que no reaparezca nada raro
-      if (wrongTimeout) {
-        clearTimeout(wrongTimeout);
-        wrongTimeout = null;
-      }
+  if (op === correctOp) {
+    // Si había timeout de "wrong", lo limpiamos para que no reaparezca nada raro
+    if (wrongTimeout) {
+      clearTimeout(wrongTimeout);
+      wrongTimeout = null;
+    }
 
-      midSym.textContent = (correctOp === 'lt') ? '<' : (correctOp === 'gt') ? '>' : '=';
-      feedback.textContent = winMsgs[Math.floor(Math.random()*winMsgs.length)];
+    midSym.textContent = (correctOp === 'lt') ? '<' : (correctOp === 'gt') ? '>' : '=';
+    feedback.textContent = winMsgs[Math.floor(Math.random()*winMsgs.length)];
 
-      // quitamos cualquier "wrong" antes de poner "correct"
-      feedback.classList.remove('wrong');
-      feedback.classList.add('correct');
+    feedback.classList.remove('wrong');
+    feedback.classList.add('correct');
 
-      leftEl.classList.remove('wrong');
-      rightEl.classList.remove('wrong');
-      leftEl.classList.add('correct');
-      rightEl.classList.add('correct');
+    leftEl.classList.remove('wrong');
+    rightEl.classList.remove('wrong');
+    leftEl.classList.add('correct');
+    rightEl.classList.add('correct');
 
-      launchConfetti();
+    launchConfetti();
 
-    } else {
-      // mostramos la elección del usuario como símbolo
-      midSym.textContent = (op === 'lt') ? '<' : (op === 'gt') ? '>' : '=';
+  } else {
+    midSym.textContent = (op === 'lt') ? '<' : (op === 'gt') ? '>' : '=';
 
-      feedback.textContent = niceFails[Math.floor(Math.random()*niceFails.length)];
+    feedback.textContent = niceFails[Math.floor(Math.random()*niceFails.length)];
 
-      // quitamos cualquier "correct" antes de poner "wrong"
-      feedback.classList.remove('correct');
-      feedback.classList.add('wrong');
+    feedback.classList.remove('correct');
+    feedback.classList.add('wrong');
 
-      leftEl.classList.remove('correct');
-      rightEl.classList.remove('correct');
-      leftEl.classList.add('wrong');
-      rightEl.classList.add('wrong');
+    leftEl.classList.remove('correct');
+    rightEl.classList.remove('correct');
+    leftEl.classList.add('wrong');
+    rightEl.classList.add('wrong');
 
-      // limpiamos timeouts previos y programamos quitar 'wrong' al terminar la animación
-      if (wrongTimeout) clearTimeout(wrongTimeout);
-      wrongTimeout = setTimeout(()=> {
-        leftEl.classList.remove('wrong');
-        rightEl.classList.remove('wrong');
-        // no tocamos 'correct' aquí: si existiera se hubiera eliminado al poner 'wrong'
-        wrongTimeout = null;
-      }, 650);
+    // 👇 Hemos eliminado el setTimeout que quitaba 'wrong' automáticamente.
+    if (wrongTimeout) {
+      clearTimeout(wrongTimeout);
+      wrongTimeout = null;
     }
   }
+}
+
 
   controls.forEach(btn => {
     btn.addEventListener('click', (e) => {
