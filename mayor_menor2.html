@@ -3,11 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <title>Comparar números</title>
-  </head>
+</head>
 <body>
 <!-- ======= Juego: comparar números ======= -->
 <style>
-  /* Contenedor */
   #compare-game {
     max-width: 520px;
     margin: 28px auto;
@@ -45,6 +44,26 @@
     justify-content:center;
   }
 
+  body {
+    font-family: "Segoe UI", sans-serif;
+    background: #f0f7ff;
+    color: #222;
+    padding: 20px;
+    max-width: 600px;
+    margin: auto;
+    text-align: center;
+  }
+  h1 {
+    color: #3366cc;
+    margin-bottom: 10px;
+  }
+
+  input, button {
+    padding: 8px;
+    font-size: 16px;
+    margin-top: 10px;
+  }
+
   .controls { margin-top: 12px; display:flex; gap:10px; justify-content:center; }
   .controls button {
     padding: 10px 14px;
@@ -69,9 +88,10 @@
     gap:10px;
     padding:6px;
     border-radius:8px;
+    background: #f5f5f5;  /* ✅ fondo neutro */
+    transition: background 0.3s, border 0.3s;
   }
 
-  /* Correct animation */
   .correct {
     animation: pop .45s ease;
     border: 2px solid #4ade80;
@@ -83,7 +103,6 @@
     100% { transform: scale(1); }
   }
 
-  /* Wrong (shake) */
   .wrong {
     animation: shake .6s;
     border: 2px solid #ff7b7b;
@@ -98,7 +117,6 @@
     100% { transform: translateX(0); }
   }
 
-  /* Confetti emoji particles */
   .confetti {
     pointer-events: none;
     position: absolute;
@@ -113,7 +131,6 @@
     100% { transform: translateY(-140px) rotate(360deg) scale(.7); opacity: 0; }
   }
 
-  /* Small footer row (siguiente) */
   .bottom-row { margin-top: 12px; display:flex; justify-content:center; gap:10px; align-items:center; }
   .btn-secondary {
     background: linear-gradient(180deg,#ffffff,#f3f4f6);
@@ -122,7 +139,6 @@
     font-size: 0.95rem;
   }
 
-  /* Responsive tweak */
   @media (max-width:420px){
     .numbers-row { gap: 10px; }
     .num-box { min-width:80px; padding:10px; font-size:1.4rem; }
@@ -130,13 +146,13 @@
   }
 </style>
 
-  <h1>CLASE DEL CID CAMPEADOR</h1>
+<h1>CLASE DEL CID CAMPEADOR</h1>
 
-  <p>
-    <a href="index.html" style="text-decoration:none; background:#3366cc; color:white; padding:8px 14px; border-radius:6px;">
-      ➡ Volver a descomponer números
-    </a>
-  </p>
+<p>
+  <a href="index.html" style="text-decoration:none; background:#3366cc; color:white; padding:8px 14px; border-radius:6px;">
+    ➡ Volver a descomponer números
+  </a>
+</p>
 
 <div id="compare-game" aria-live="polite">
   <h2>Comparar números — ¿qué símbolo corresponde?</h2>
@@ -172,13 +188,13 @@
   const revealBtn = document.getElementById('revealBtn');
   const container = document.getElementById('compare-game');
 
-  // Mensajes positivos para fallos (aleatorios)
+  // Mensajes positivos para fallos
   const niceFails = [
-    "Casi — inténtalo otra vez, ¡tú puedes!",
-    "Has estado cerca. Repítelo y lo conseguirás.",
-    "No te rindas, la práctica hace magia.",
-    "Ups — prueba otra vez, estás aprendiendo.",
-    "Sigue intentándolo — ¡cada fallo enseña!"
+    "¡Casi! No pasa nada, inténtalo otra vez 💪",
+    "Has estado cerca. ¡Tú puedes! ✨",
+    "Cada fallo enseña — ¡sigue así! 📚",
+    "Ups — prueba otra vez, estás aprendiendo 🌱",
+    "Sigue intentándolo — ¡eres valiente! 🚀"
   ];
   const winMsgs = [
     "¡Perfecto! 🎉",
@@ -194,13 +210,13 @@
   }
 
   function newRound() {
-    // números de 4 cifras: 1000..9999
     leftNum = randInt(1000, 9999);
     rightNum = randInt(1000, 9999);
     leftEl.textContent = leftNum.toString().padStart(4,'0');
     rightEl.textContent = rightNum.toString().padStart(4,'0');
     midSym.textContent = '?';
     feedback.textContent = '';
+    feedback.classList.remove('correct','wrong'); // ✅ limpia fondo
     leftEl.classList.remove('correct','wrong');
     rightEl.classList.remove('correct','wrong');
     container.querySelectorAll('.confetti').forEach(n => n.remove());
@@ -209,28 +225,18 @@
   function checkAnswer(op) {
     const correctOp = (leftNum < rightNum) ? 'lt' : (leftNum > rightNum) ? 'gt' : 'eq';
     if (op === correctOp) {
-      // acierto: animación y mensaje positivo
       midSym.textContent = (correctOp === 'lt') ? '<' : (correctOp === 'gt') ? '>' : '=';
       feedback.textContent = winMsgs[Math.floor(Math.random()*winMsgs.length)];
       feedback.classList.remove('wrong'); feedback.classList.add('correct');
-
-      // marcar los numeritos un poquito
       leftEl.classList.add('correct');
       rightEl.classList.add('correct');
-
-      // confetti emoji burst
       launchConfetti();
     } else {
-      // fallo: mensaje amable y animación de "incorrecto"
       midSym.textContent = (op === 'lt') ? '<' : (op === 'gt') ? '>' : '=';
       feedback.textContent = niceFails[Math.floor(Math.random()*niceFails.length)];
       feedback.classList.remove('correct'); feedback.classList.add('wrong');
-
-      // shake numeritos
       leftEl.classList.add('wrong');
       rightEl.classList.add('wrong');
-
-      // quitar la clase wrong cuando termine la animación para permitir reintentos
       setTimeout(()=> {
         leftEl.classList.remove('wrong');
         rightEl.classList.remove('wrong');
@@ -246,15 +252,14 @@
   });
 
   newBtn.addEventListener('click', newRound);
+
   revealBtn.addEventListener('click', function(){
-    // mostrar la respuesta (sin juzgar)
     const correctOp = (leftNum < rightNum) ? '<' : (leftNum > rightNum) ? '>' : '=';
     midSym.textContent = correctOp;
-    feedback.textContent = "Respuesta mostrada — inténtalo otra vez con otro.";
-    feedback.classList.remove('wrong'); feedback.classList.add('correct');
+    feedback.textContent = "Respuesta mostrada — ¡intenta otro!";
+    feedback.classList.remove('wrong','correct'); // 🧼 vuelve a neutro
   });
 
-  // Confetti simple con emoji
   function launchConfetti() {
     const emojis = ['🎉','✨','🎈','💫','⭐','👍'];
     const rect = container.getBoundingClientRect();
@@ -262,7 +267,6 @@
       const s = document.createElement('span');
       s.className = 'confetti';
       s.textContent = emojis[Math.floor(Math.random()*emojis.length)];
-      // random left within the symbol area
       const x = (rect.width/2) + (Math.random()*120 - 60);
       s.style.left = x + 'px';
       s.style.top = (rect.height * 0.45) + 'px';
@@ -270,26 +274,14 @@
       s.style.transform = `translateX(${Math.random()*40-20}px)`;
       s.style.fontSize = (16 + Math.random()*18) + 'px';
       s.style.position = 'absolute';
-      // random delay and duration
       s.style.animationDuration = (900 + Math.random()*700) + 'ms';
       container.appendChild(s);
-      // remove after animation
       setTimeout(()=> s.remove(), 1900);
     }
   }
 
-  // iniciar juego a la carga
   newRound();
 })();
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
