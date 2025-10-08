@@ -210,17 +210,24 @@
   }
 
   function newRound() {
-    leftNum = randInt(1000, 9999);
-    rightNum = randInt(1000, 9999);
-    leftEl.textContent = leftNum.toString().padStart(4,'0');
-    rightEl.textContent = rightNum.toString().padStart(4,'0');
-    midSym.textContent = '?';
-    feedback.textContent = '';
-    feedback.classList.remove('correct','wrong'); // ✅ limpia fondo
-    leftEl.classList.remove('correct','wrong');
-    rightEl.classList.remove('correct','wrong');
-    container.querySelectorAll('.confetti').forEach(n => n.remove());
-  }
+  // números de 4 cifras: 1000..9999
+  leftNum = randInt(1000, 9999);
+  rightNum = randInt(1000, 9999);
+  leftEl.textContent = leftNum.toString().padStart(4,'0');
+  rightEl.textContent = rightNum.toString().padStart(4,'0');
+  midSym.textContent = '?';
+
+  // 🔹 resetear feedback
+  feedback.textContent = '';
+  feedback.classList.remove('correct', 'wrong');
+
+  // 🔹 resetear cuadros numéricos
+  leftEl.classList.remove('correct', 'wrong');
+  rightEl.classList.remove('correct', 'wrong');
+
+  // 🔹 eliminar confetti
+  container.querySelectorAll('.confetti').forEach(n => n.remove());
+}
 
   function checkAnswer(op) {
     const correctOp = (leftNum < rightNum) ? 'lt' : (leftNum > rightNum) ? 'gt' : 'eq';
