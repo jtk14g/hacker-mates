@@ -15,9 +15,7 @@
       text-align: center;
       position: relative;
     }
-
     #compare-game h2 { margin: 0 0 10px; font-size: 1.1rem; color:#333; }
-
     .numbers-row {
       display:flex;
       align-items:center;
@@ -27,7 +25,6 @@
       font-size: 2rem;
       font-weight: 700;
     }
-
     .num-box {
       min-width:110px;
       padding: 12px 10px;
@@ -36,7 +33,6 @@
       box-shadow: inset 0 -3px 6px rgba(0,0,0,0.03);
       border: 2px solid transparent;
     }
-
     .sym {
       font-size: 2.6rem;
       width: 72px;
@@ -44,7 +40,6 @@
       align-items:center;
       justify-content:center;
     }
-
     body {
       font-family: "Segoe UI", sans-serif;
       background: #f0f7ff;
@@ -54,11 +49,8 @@
       margin: auto;
       text-align: center;
     }
-
     h1 { color: #3366cc; margin-bottom: 10px; }
-
     input, button { padding: 8px; font-size: 16px; margin-top: 10px; }
-
     .controls { margin-top: 12px; display:flex; gap:10px; justify-content:center; }
     .controls button {
       padding: 10px 14px;
@@ -74,7 +66,6 @@
       transform: translateY(2px);
       box-shadow: 0 2px 6px rgba(0,0,0,0.06);
     }
-
     #feedback {
       min-height: 38px;
       margin-top: 14px;
@@ -89,7 +80,6 @@
       background: #f5f5f5;
       transition: background 0.3s, border 0.3s;
     }
-
     .correct {
       animation: pop .45s ease;
       border: 2px solid #4ade80;
@@ -100,7 +90,6 @@
       60% { transform: scale(1.06); opacity: 1; }
       100% { transform: scale(1); }
     }
-
     .wrong {
       animation: shake .6s;
       border: 2px solid #ff7b7b;
@@ -114,7 +103,6 @@
       80% { transform: translateX(4px); }
       100% { transform: translateX(0); }
     }
-
     .confetti {
       pointer-events: none;
       position: absolute;
@@ -128,13 +116,13 @@
       0% { transform: translateY(0) rotate(0deg) scale(1); opacity: 1; }
       100% { transform: translateY(-140px) rotate(360deg) scale(.7); opacity: 0; }
     }
-
     .bottom-row {
       margin-top: 12px;
       display:flex;
       justify-content:center;
       gap:10px;
       align-items:center;
+      flex-wrap: wrap;
     }
     .btn-secondary {
       background: linear-gradient(180deg,#ffffff,#f3f4f6);
@@ -142,12 +130,7 @@
       border-radius: 8px;
       font-size: 0.95rem;
     }
-
-    #score {
-      font-weight: 600;
-      margin: 12px 0;
-    }
-
+    #score { font-weight: 600; margin: 12px 0; }
     @media (max-width:420px){
       .numbers-row { gap: 10px; }
       .num-box { min-width:80px; padding:10px; font-size:1.4rem; }
@@ -157,7 +140,6 @@
 </head>
 <body>
   <h1>CLASE DEL CID CAMPEADOR</h1>
-
   <p>
     <a href="index.html" style="text-decoration:none; background:#3366cc; color:white; padding:8px 14px; border-radius:6px;">
       ➡ Volver a descomponer números
@@ -166,7 +148,6 @@
 
   <div id="compare-game" aria-live="polite">
     <h2>Comparar números romanos — ¿qué símbolo corresponde?</h2>
-
     <div id="score">Puntos: 0</div>
 
     <div class="numbers-row" id="numbersRow">
@@ -184,155 +165,127 @@
     <div id="feedback" aria-atomic="true"></div>
 
     <div class="bottom-row">
+      <button class="btn-secondary" id="revealLeft">Ayuda izquierda</button>
+      <button class="btn-secondary" id="revealRight">Ayuda derecha</button>
       <button class="btn-secondary" id="newBtn">Otro número</button>
-      <button class="btn-secondary" id="revealBtn">Ayuda</button>
     </div>
   </div>
 
   <script>
-    (function(){
-      const leftEl = document.getElementById('leftNum');
-      const rightEl = document.getElementById('rightNum');
-      const midSym = document.getElementById('midSymbol');
-      const feedback = document.getElementById('feedback');
-      const controls = document.querySelectorAll('#compare-game .controls button');
-      const newBtn = document.getElementById('newBtn');
-      const revealBtn = document.getElementById('revealBtn');
-      const container = document.getElementById('compare-game');
-      const scoreEl = document.getElementById('score');
+  (function(){
+    const leftEl = document.getElementById('leftNum');
+    const rightEl = document.getElementById('rightNum');
+    const midSym = document.getElementById('midSymbol');
+    const feedback = document.getElementById('feedback');
+    const controls = document.querySelectorAll('#compare-game .controls button');
+    const newBtn = document.getElementById('newBtn');
+    const revealLeft = document.getElementById('revealLeft');
+    const revealRight = document.getElementById('revealRight');
+    const container = document.getElementById('compare-game');
+    const scoreEl = document.getElementById('score');
 
-      const niceFails = [
-        "¡Casi! No pasa nada, inténtalo otra vez 💪",
-        "Has estado cerca. ¡Tú puedes! ✨",
-        "Cada fallo enseña — ¡sigue así! 📚",
-        "Ups — prueba otra vez, estás aprendiendo 🌱",
-        "Sigue intentándolo — ¡eres valiente! 🚀"
-      ];
-      const winMsgs = [
-        "¡Perfecto! 🎉",
-        "¡Muy bien! ¡Excelente trabajo! 🌟",
-        "¡Has acertado! ¡Eres un crack! 💪",
-        "¡Bien hecho! Sigue así ✨"
-      ];
+    const niceFails = [
+      "¡Casi! No pasa nada, inténtalo otra vez 💪",
+      "Has estado cerca. ¡Tú puedes! ✨",
+      "Cada fallo enseña — ¡sigue así! 📚",
+      "Ups — prueba otra vez, estás aprendiendo 🌱",
+      "Sigue intentándolo — ¡eres valiente! 🚀"
+    ];
+    const winMsgs = [
+      "¡Perfecto! 🎉",
+      "¡Muy bien! ¡Excelente trabajo! 🌟",
+      "¡Has acertado! ¡Eres un crack! 💪",
+      "¡Bien hecho! Sigue así ✨"
+    ];
 
-      let leftNum = 0, rightNum = 0;
-      let wrongTimeout = null;
-      let score = 0;
+    let leftNum = 0, rightNum = 0;
+    let wrongTimeout = null;
+    let score = 0;
+    let leftRevealed = false, rightRevealed = false;
 
-      function randInt(min, max) {
-        return Math.floor(Math.random() * (max - min + 1)) + min;
+    function randInt(min, max) { return Math.floor(Math.random()*(max-min+1))+min; }
+
+    function toRoman(num){
+      const romanMap = [["M",1000],["CM",900],["D",500],["CD",400],
+                        ["C",100],["XC",90],["L",50],["XL",40],
+                        ["X",10],["IX",9],["V",5],["IV",4],["I",1]];
+      let res=''; for(const [r,v] of romanMap){while(num>=v){res+=r;num-=v;}} return res;
+    }
+
+    function updateScore(points){ score+=points; scoreEl.textContent=`Puntos: ${score}`; }
+
+    function newRound(){
+      if(wrongTimeout){ clearTimeout(wrongTimeout); wrongTimeout=null; }
+      leftNum = randInt(1,3999);
+      rightNum = randInt(1,3999);
+      leftEl.textContent = toRoman(leftNum);
+      rightEl.textContent = toRoman(rightNum);
+      midSym.textContent = '?';
+      feedback.textContent='';
+      feedback.classList.remove('correct','wrong');
+      leftEl.classList.remove('correct','wrong');
+      rightEl.classList.remove('correct','wrong');
+      container.querySelectorAll('.confetti').forEach(n=>n.remove());
+      leftRevealed=false; rightRevealed=false;
+    }
+
+    function checkAnswer(op){
+      const correctOp = (leftNum<rightNum)?'lt':(leftNum>rightNum)?'gt':'eq';
+      let points=5;
+      if(leftRevealed) points-=2;
+      if(rightRevealed) points-=2;
+
+      if(op===correctOp){
+        midSym.textContent = (correctOp==='lt')?'<':(correctOp==='gt')?'>':'=';
+        feedback.textContent=winMsgs[Math.floor(Math.random()*winMsgs.length)];
+        feedback.classList.remove('wrong'); feedback.classList.add('correct');
+        leftEl.classList.remove('wrong'); rightEl.classList.remove('wrong');
+        leftEl.classList.add('correct'); rightEl.classList.add('correct');
+        launchConfetti();
+        updateScore(points);
+      }else{
+        midSym.textContent=(op==='lt')?'<':(op==='gt')?'>':'=';
+        feedback.textContent=niceFails[Math.floor(Math.random()*niceFails.length)];
+        feedback.classList.remove('correct'); feedback.classList.add('wrong');
+        leftEl.classList.remove('correct'); rightEl.classList.remove('correct');
+        leftEl.classList.add('wrong'); rightEl.classList.add('wrong');
       }
+      leftRevealed=false; rightRevealed=false;
+    }
 
-      function toRoman(num) {
-        const romanMap = [
-          ["M", 1000], ["CM",900], ["D",500], ["CD",400],
-          ["C",100], ["XC",90], ["L",50], ["XL",40],
-          ["X",10], ["IX",9], ["V",5], ["IV",4], ["I",1]
-        ];
-        let result = '';
-        for (const [roman, val] of romanMap) {
-          while(num >= val){
-            result += roman;
-            num -= val;
-          }
-        }
-        return result;
+    controls.forEach(btn=>{ btn.addEventListener('click',()=>checkAnswer(btn.getAttribute('data-op'))); });
+    newBtn.addEventListener('click', newRound);
+
+    revealLeft.addEventListener('click', ()=>{
+      if(!leftRevealed){ leftEl.textContent=leftNum; leftRevealed=true; updateScore(-2);
+        setTimeout(()=>leftEl.textContent=toRoman(leftNum),2000);
       }
-
-      function updateScore(points){
-        score += points;
-        scoreEl.textContent = `Puntos: ${score}`;
+    });
+    revealRight.addEventListener('click', ()=>{
+      if(!rightRevealed){ rightEl.textContent=rightNum; rightRevealed=true; updateScore(-2);
+        setTimeout(()=>rightEl.textContent=toRoman(rightNum),2000);
       }
+    });
 
-      function newRound() {
-        if (wrongTimeout) { clearTimeout(wrongTimeout); wrongTimeout = null; }
-
-        leftNum = randInt(1, 3999);
-        rightNum = randInt(1, 3999);
-
-        leftEl.textContent = toRoman(leftNum);
-        rightEl.textContent = toRoman(rightNum);
-        midSym.textContent = '?';
-
-        feedback.textContent = '';
-        feedback.classList.remove('correct','wrong');
-        leftEl.classList.remove('correct','wrong');
-        rightEl.classList.remove('correct','wrong');
-
-        container.querySelectorAll('.confetti').forEach(n => n.remove());
+    function launchConfetti(){
+      const emojis=['🎉','✨','🎈','💫','⭐','👍'];
+      const rect=container.getBoundingClientRect();
+      for(let i=0;i<12;i++){
+        const s=document.createElement('span'); s.className='confetti';
+        s.textContent=emojis[Math.floor(Math.random()*emojis.length)];
+        const x=(rect.width/2)+(Math.random()*120-60);
+        s.style.left=x+'px'; s.style.top=(rect.height*0.45)+'px';
+        s.style.opacity=1; s.style.transform=`translateX(${Math.random()*40-20}px)`;
+        s.style.fontSize=(16+Math.random()*18)+'px';
+        s.style.position='absolute';
+        s.style.animationDuration=(900+Math.random()*700)+'ms';
+        container.appendChild(s);
+        setTimeout(()=>s.remove(),1900);
       }
+    }
 
-      function checkAnswer(op) {
-        const correctOp = (leftNum < rightNum) ? 'lt' : (leftNum > rightNum) ? 'gt' : 'eq';
-        if (op === correctOp) {
-          if (wrongTimeout) { clearTimeout(wrongTimeout); wrongTimeout = null; }
-
-          midSym.textContent = (correctOp === 'lt') ? '<' : (correctOp === 'gt') ? '>' : '=';
-          feedback.textContent = winMsgs[Math.floor(Math.random()*winMsgs.length)];
-
-          feedback.classList.remove('wrong'); feedback.classList.add('correct');
-          leftEl.classList.remove('wrong'); rightEl.classList.remove('wrong');
-          leftEl.classList.add('correct'); rightEl.classList.add('correct');
-
-          launchConfetti();
-          updateScore(5);
-        } else {
-          midSym.textContent = (op === 'lt') ? '<' : (op === 'gt') ? '>' : '=';
-
-          feedback.textContent = niceFails[Math.floor(Math.random()*niceFails.length)];
-
-          feedback.classList.remove('correct'); feedback.classList.add('wrong');
-          leftEl.classList.remove('correct'); rightEl.classList.remove('correct');
-          leftEl.classList.add('wrong'); rightEl.classList.add('wrong');
-
-          if (wrongTimeout) { clearTimeout(wrongTimeout); wrongTimeout = null; }
-        }
-      }
-
-      controls.forEach(btn => {
-        btn.addEventListener('click', ()=> checkAnswer(btn.getAttribute('data-op')));
-      });
-
-      newBtn.addEventListener('click', newRound);
-
-      revealBtn.addEventListener('click', function(){
-        leftEl.textContent = leftNum;
-        rightEl.textContent = rightNum;
-        feedback.textContent = "¡Se ha mostrado la ayuda! -2 puntos";
-        feedback.classList.remove('correct','wrong');
-        leftEl.classList.remove('correct','wrong');
-        rightEl.classList.remove('correct','wrong');
-        updateScore(-2);
-
-        setTimeout(()=>{
-          leftEl.textContent = toRoman(leftNum);
-          rightEl.textContent = toRoman(rightNum);
-          feedback.textContent = '';
-        }, 2000);
-      });
-
-      function launchConfetti() {
-        const emojis = ['🎉','✨','🎈','💫','⭐','👍'];
-        const rect = container.getBoundingClientRect();
-        for (let i=0;i<12;i++){
-          const s = document.createElement('span');
-          s.className = 'confetti';
-          s.textContent = emojis[Math.floor(Math.random()*emojis.length)];
-          const x = (rect.width/2) + (Math.random()*120 - 60);
-          s.style.left = x + 'px';
-          s.style.top = (rect.height * 0.45) + 'px';
-          s.style.opacity = 1;
-          s.style.transform = `translateX(${Math.random()*40-20}px)`;
-          s.style.fontSize = (16 + Math.random()*18) + 'px';
-          s.style.position = 'absolute';
-          s.style.animationDuration = (900 + Math.random()*700) + 'ms';
-          container.appendChild(s);
-          setTimeout(()=> s.remove(), 1900);
-        }
-      }
-
-      newRound();
-    })();
+    newRound();
+  })();
   </script>
 </body>
 </html>
