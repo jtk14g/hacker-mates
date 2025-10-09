@@ -215,19 +215,30 @@
     function updateScore(points){ score+=points; scoreEl.textContent=`Puntos: ${score}`; }
 
     function newRound(){
-      if(wrongTimeout){ clearTimeout(wrongTimeout); wrongTimeout=null; }
-      leftNum = randInt(1,3999);
-      rightNum = randInt(1,3999);
-      leftEl.textContent = toRoman(leftNum);
-      rightEl.textContent = toRoman(rightNum);
-      midSym.textContent = '?';
-      feedback.textContent='';
-      feedback.classList.remove('correct','wrong');
-      leftEl.classList.remove('correct','wrong');
-      rightEl.classList.remove('correct','wrong');
-      container.querySelectorAll('.confetti').forEach(n=>n.remove());
-      leftRevealed=false; rightRevealed=false;
-    }
+  if(wrongTimeout){ clearTimeout(wrongTimeout); wrongTimeout=null; }
+
+  // Generar números aleatorios
+  leftNum = randInt(1,3999);
+  rightNum = randInt(1,3999);
+
+  // Mostrar números romanos
+  leftEl.textContent = toRoman(leftNum);
+  rightEl.textContent = toRoman(rightNum);
+
+  // Reset de símbolos y feedback
+  midSym.textContent = '?';
+  feedback.textContent='';
+  feedback.classList.remove('correct','wrong');
+  leftEl.classList.remove('correct','wrong');
+  rightEl.classList.remove('correct','wrong');
+
+  // Limpiar confetti
+  container.querySelectorAll('.confetti').forEach(n=>n.remove());
+
+  // Reset de ayudas
+  leftRevealed = rightRevealed = false;
+}
+
 
     function checkAnswer(op){
       const correctOp = (leftNum<rightNum)?'lt':(leftNum>rightNum)?'gt':'eq';
@@ -258,12 +269,12 @@
 
     revealLeft.addEventListener('click', ()=>{
       if(!leftRevealed){ leftEl.textContent=leftNum; leftRevealed=true; updateScore(-2);
-        setTimeout(()=>leftEl.textContent=toRoman(leftNum),2000);
+        //setTimeout(()=>leftEl.textContent=toRoman(leftNum),2000);
       }
     });
     revealRight.addEventListener('click', ()=>{
       if(!rightRevealed){ rightEl.textContent=rightNum; rightRevealed=true; updateScore(-2);
-        setTimeout(()=>rightEl.textContent=toRoman(rightNum),2000);
+        //setTimeout(()=>rightEl.textContent=toRoman(rightNum),2000);
       }
     });
 
