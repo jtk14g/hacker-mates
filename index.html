@@ -25,6 +25,15 @@
       font-size: 16px;
       margin-top: 10px;
     }
+    a.boton {
+      display: inline-block;
+      text-decoration: none;
+      background: #3366cc;
+      color: white;
+      padding: 8px 14px;
+      border-radius: 6px;
+      margin: 5px;
+    }
     #salida {
       background: white;
       padding: 15px;
@@ -42,9 +51,8 @@
 
   <h1>CLASE DEL CID CAMPEADOR</h1>
   <p>
-    <a href="mayor_menor.html" style="text-decoration:none; background:#3366cc; color:white; padding:8px 14px; border-radius:6px;">
-      ➡ Ir a otra actividad
-    </a>
+    <a href="mayor_menor.html" class="boton">Comprar números</a>
+    <a href="romanos.html" class="boton">Números romanos</a>
   </p>
 
   <p>Escribe un número: (NNNN)</p>
@@ -88,7 +96,6 @@
     const ultDos = n % 100;
     salida += `<div class="linea"><b>Ordinal de sus dos últimas cifras (${ultDos}):</b> ${ordinal(ultDos)}</div>`;
     document.getElementById("salida").innerHTML = salida;
-    
   }
 
   // Ordinales básicos
@@ -135,14 +142,17 @@
 
     const unidades = ["", "uno", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve"];
     const decenas = ["", "diez", "veinte", "treinta", "cuarenta", "cincuenta", "sesenta", "setenta", "ochenta", "noventa"];
+    const especiales = {
+      10:"diez",11:"once",12:"doce",13:"trece",14:"catorce",15:"quince",
+      16:"dieciséis",17:"diecisiete",18:"dieciocho",19:"diecinueve",
+      21:"veintiuno",22:"veintidós",23:"veintitrés",24:"veinticuatro",
+      25:"veinticinco",26:"veintiséis",27:"veintisiete",28:"veintiocho",29:"veintinueve"
+    };
     const centenas = ["", "ciento", "doscientos", "trescientos", "cuatrocientos", "quinientos", "seiscientos", "setecientos", "ochocientos", "novecientos"];
 
+    if (especiales[num]) return especiales[num];
     if (num < 10) return unidades[num];
-    if (num < 20) {
-      const especiales = {10:"diez",11:"once",12:"doce",13:"trece",14:"catorce",15:"quince",
-                          16:"dieciséis",17:"diecisiete",18:"dieciocho",19:"diecinueve"};
-      return especiales[num];
-    }
+    if (num < 20) return especiales[num];
     if (num < 100) {
       const d = Math.floor(num / 10);
       const u = num % 10;
@@ -166,18 +176,3 @@
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
